@@ -28,7 +28,7 @@ try:
         cur.execute('insert into phones values ("Android", 5)')
         cur.execute('insert into phones values ("iPhone", 6)')
 
-        # db.commit()  # Don't need - will be called automatically by the context manager if there's no error. 
+        # db.commit()  # Don't need - will be called automatically by the context manager if there's no error.
 except sqlite3.Error as e:
     print('Error adding rows')
     print(e)
@@ -61,6 +61,8 @@ try:
     with db:
         cur.execute('drop table phones')  # Delete table
         #db.commit()  # Not needed, context manager will commit automatically
-
+except sqlite3.Error as e:
+    print('Error deleting phones table')
+    print(e)
 finally:
     db.close()
