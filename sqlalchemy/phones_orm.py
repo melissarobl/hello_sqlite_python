@@ -3,7 +3,6 @@ from sqlalchemy import create_engine
 # Engine represents the core interface to the database
 engine = create_engine('sqlite:///testdb', echo=True)   # Create engine. echo=True turns on logging
 
-
 # Set up mapping between Python class and row in SQLite database
 
 from sqlalchemy.ext.declarative import declarative_base # From docs: 'Classes mapped using the Declarative
@@ -45,6 +44,7 @@ print(phone)    # Calls __repr__
 # The phone is not saved to the database yet.
 
 # Need a Session to talk to the database. This is what manages connections to the DB.
+# And, the session manages objects that are mapped to rows in the database.
 
 from sqlalchemy.orm import sessionmaker
 
@@ -54,7 +54,7 @@ Session = sessionmaker(bind=engine)   #Use the engine created earlier
 # to save the phone object, ask the Session to instantiate a session onject, ask the session object to talk to the DB
 save_session = Session()
 
-save_session.add(phone)   # The phone is pending - not yet saved. It won't be until the session is flushed, committed, or closed
+save_session.add(phone)   # The phone is pending - not yet saved. It won't be until the session is committed, or closed
 
 save_session.commit()  # now phone should be saved
 
@@ -69,7 +69,7 @@ save_session.add_all([ phone2, phone3, phone4 ])
 print(save_session.new)   # The newly added phones
 print(save_session.dirty)   # empty set
 
-save_session.commit()   # now nothing is new, or dirty
+save_session.commit()   # All data saved. Now nothing is new, or dirty
 
 phone4.version = 10   # The session tracks the objects that are added to it
 # So if you change any of the data in any of the tracked objects, it will be added as a pending change in the DB
@@ -151,7 +151,7 @@ for phone in search_session.query(Phone).filter(Phone.brand.like('%s%')):
 for phone in search_session.query(Phone).filter(Phone.version > 4):
     print(phone)
 
-# Match phones where version is less than or equal to 3
+# Match phones where version is less than or equal to 4
 for phone in search_session.query(Phone).filter(Phone.version <= 4):
     print(phone)
 
@@ -163,7 +163,8 @@ for phone in search_session.query(Phone).filter(Phone.version > 4).order_by(Phon
 # Count the rows returned with count(). How many phones with version greater than 4?
 print( search_session.query(Phone).filter(Phone.version > 4).count() )
 
-search_session.close()
+search_session.close()   # Done with session. Close.
+# Once the session is closed, the objects added are detatched and you won't be able to query their state.
 
 
 ## Updating the DB - query, find an object, update it, save
