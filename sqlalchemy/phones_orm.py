@@ -1,40 +1,19 @@
 from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
 
-# Engine represents the core interface to the database
-engine = create_engine('sqlite:///testdb', echo=True)   # Create engine. echo=True turns on logging
+from base import Base
 
-# Set up mapping between Python class and row in SQLite database
+# # Engine represents the core interface to the database
+# # The first argument is the url of the database; this points to a sqlitedb saved in a file called phone.db
+engine = create_engine('sqlite:///phone.db', echo=False)   # Create engine. echo=True turns on logging
+#
+from phone import Phone
+#
+# # Base = declarative_base()  # All of the mapped classes inherit from this class.
+# #
+Base.metadata.create_all(engine) # Create a table for all the things that use Base
 
-from sqlalchemy.ext.declarative import declarative_base # From docs: 'Classes mapped using the Declarative
-# system are defined in terms of a base class which maintains a catalog of classes and tables relative to that base -
-# this is known as the declarative base class.'
-
-Base = declarative_base()  # All of our mapped classes will use this Base
-
-from sqlalchemy import Column, Integer, String
-
-
-class Phone(Base):
-
-    '''Defines metadata about a phones table. Will create Phone objects from rows in this table. '''
-
-    # At the minimum, need a table name
-    __tablename__ = 'phones'
-
-    # And at least one column. id, brand, version, will be the column names, and the have the types specified.
-    id = Column(Integer, primary_key=True)
-    brand = Column(String)
-    version = Column(Integer)
-
-    def __repr__(self):
-        '''Optional, return an unambiguous representation of this object, helpful for debugging'''
-        return 'Phone: id = {} brand = {} version = {}'.format(self.id, self.brand, self.version)
-
-
-# Create a table for all the things that use Base
-Base.metadata.create_all(engine)
-
-#Create a user object. Use named args to set the values of the object
+#Create a phone object. Use named args to set the values of the object
 phone = Phone(brand='Samsung', version=6)
 # can also read and set variables of the phone object
 phone.version=7
@@ -46,12 +25,10 @@ print(phone)    # Calls __repr__
 # Need a Session to talk to the database. This is what manages connections to the DB.
 # And, the session manages objects that are mapped to rows in the database.
 
-from sqlalchemy.orm import sessionmaker
-
-#Make a Session class...
+#Make a Session class... Only need to do this one time.
 Session = sessionmaker(bind=engine)   #Use the engine created earlier
 
-# to save the phone object, ask the Session to instantiate a session onject, ask the session object to talk to the DB
+# Ask the Session to instantiate a session object. We'll use the session object to talk to the DB
 save_session = Session()
 
 save_session.add(phone)   # The phone is pending - not yet saved. It won't be until the session is committed, or closed
@@ -98,10 +75,17 @@ print(search_session.query(Phone).filter_by(id=4).one())  # Useful for primary k
 
 # Query that return 0 rows - difference between first() and one()
 print(search_session.query(Phone).filter_by(id=4000).first())   # None
+
 try:
     print(search_session.query(Phone).filter_by(id=4000).one())   # Error
 except:
     print('calling one() when there are 0 or 2+ results causes an error')
+
+print('One or none')
+#Or, can use one_or_none. Returns None, or the first matching object, if found.
+print(search_session.query(Phone).filter_by(id=4).one_or_none())   # Phone 3 data
+print(search_session.query(Phone).filter_by(id=4000).one_or_none())   # None
+
 
 # If you want a list to use in the program, not a iterator, use the all() method
 
