@@ -1,17 +1,16 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-
 from base import Base
+
+from phone import Phone
+
 
 # # Engine represents the core interface to the database
 # # The first argument is the url of the database; this points to a sqlitedb saved in a file called phone.db
 engine = create_engine('sqlite:///phone.db', echo=False)   # Create engine. echo=True turns on logging
-#
-from phone import Phone
-#
-# # Base = declarative_base()  # All of the mapped classes inherit from this class.
-# #
+
 Base.metadata.create_all(engine) # Create a table for all the things that use Base
+# In a real program, you might have an external config script to create the tables.
 
 #Create a phone object. Use named args to set the values of the object
 phone = Phone(brand='Samsung', version=6)
