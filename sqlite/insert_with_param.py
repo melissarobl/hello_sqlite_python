@@ -25,9 +25,4 @@ db.commit()  # Ask the database to save changes!
 
 db.close()
 
-
-
-
-
 # TODO error handling!
-
