@@ -14,6 +14,8 @@ version = int(input('Enter version of phone (as an integer): '))
 # No parameters. A format string will just build a string from
 # the brand and version variables, and is still vulnerable to SQL injections
 cur.execute('insert into phones values ("%s", %d)' % (brand, version))
+# Format strings are just as bad!
+# cur.execute(f'insert into phones values ("{brand}", {version})')
 
 # Fetch and display all data. Results stored in the cursor object
 cur.execute('select * from phones')

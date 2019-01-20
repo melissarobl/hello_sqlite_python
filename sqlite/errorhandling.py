@@ -1,6 +1,5 @@
 import sqlite3
 import traceback
-import sys
 
 # Create and add sample data
 

@@ -1,68 +1,73 @@
+"""
+sqlite3 context manager and try-except error handling
+
+"""
+
 import sqlite3
 
 
-
-# Create a table
-
-try:
-    db = sqlite3.connect('my_first_db.db')  # Creates or opens database file
-    cur = db.cursor()  # Need a cursor object to perform operations
-    cur.execute('create table phones (brand text, version int)')
-
-except sqlite3.Error:
-    print('error creating table')
-
-finally:
-    db.close()
+def create_table(db):
+    try:
+        with db:
+            cur = db.cursor()
+            cur.execute('create table phones (brand text, version int)')
+    except sqlite3.Error as e:
+        print(f'error creating table because {e}')
 
 
-# Add some data; using context manager
-# 'Connection objects can be used as context managers that automatically commit or rollback transactions. In the event of an exception, the transaction is rolled back; otherwise, the transaction is committed:'
-# Python 3 docs https://docs.python.org/3.6/library/sqlite3.html
+def add_test_data(db):
 
-try:
-    db = sqlite3.connect('my_first_db.db')  # Creates or opens database file
-    cur = db.cursor()  # Need a cursor object to perform operations
+    try:
+        with db:
+            cur = db.cursor()
+            cur.execute('insert into phones values ("Android", 5)')
+            cur.execute('insert into phones values ("iPhone", 6)')
 
-    with db:
-        cur.execute('insert into phones values ("Android", 5)')
-        cur.execute('insert into phones values ("iPhone", 6)')
-
-        # db.commit()  # Don't need - will be called automatically by the context manager if there's no error.
-except sqlite3.Error as e:
-    print('Error adding rows')
-    print(e)
-    #In the event of an error, transactions will be automatically rolled back.
-
-finally:
-    db.close()
+    except sqlite3.Error:
+        print('Error adding rows')
 
 
-# Execute a query. Do not need a context manager, as no changes are being made to the DB
-try:
-    db = sqlite3.connect('my_first_db.db')  # Creates or opens database file
-    cur = db.cursor()  # Need a cursor object to perform operations
 
-    for row in cur.execute('select * from phones'):
-        print(row)
+def print_all_data(db):
+    # Execute a query. Do not need a context manager, as no changes are being made to the DB
+    try:
+        cur = db.cursor()  # Need a cursor object to perform operations
+        for row in cur.execute('select * from phones'):
+            print(row)
 
-except sqlite3.Error as e:
-    print('Error selecting data from phones table')
-    print(e)
+    except sqlite3.Error as e:
+        print(f'Error selecting data from phones table because {e}')
 
-finally:
-    db.close()
 
-# Delete table. Use context manager
+def delete_table(db):
+    try:
+        with db:
+            cur = db.cursor()
+            cur.execute('drop table phones')  # Delete table
+    except sqlite3.Error as e:
+        print(f'Error deleting phones table because {e}')
 
-try:
-    db = sqlite3.connect('my_first_db.db')  # Creates or opens database file
-    cur = db.cursor()  # Need a cursor object to perform operations
-    with db:
-        cur.execute('drop table phones')  # Delete table
-        #db.commit()  # Not needed, context manager will commit automatically
-except sqlite3.Error as e:
-    print('Error deleting phones table')
-    print(e)
-finally:
-    db.close()
+
+def main():
+    db = None
+
+    try:
+        db = sqlite3.connect('my_first_db.db')
+    except sqlite3.Error as e:
+        print(f'Unable to connect to database because {e}.')
+
+    if db is not None:
+        create_table(db)
+        add_test_data(db)
+        print_all_data(db)
+        delete_table(db)
+
+        try:
+            db.close()
+        except sqlite3.Error:
+            print(f'Error closing database because {e}')
+
+
+if __name__ == '__main__':
+    main()
+
