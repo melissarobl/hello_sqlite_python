@@ -121,6 +121,20 @@ for cat in Cat.select().order_by(Cat.name):
     print(cat)
 
 
+# limit results
+print('\nLimit results to a maximum of the first two rows')
+only_two = Cat.select().limit(2)
+for cat in only_two:
+    print(cat)
+
+
+# Can chain many methods
+print('\nSelect 5-year-old cats, limit 2, sort by color ')
+query = Cat.select().where(Cat.age == 5).order_by(Cat.color).limit(2)
+for cat in query:
+    print(cat)  # How many things printed?
+
+
 print('\nDeleting all cats')
 # Delete all cats
 rows_deleted = Cat.delete().execute()
