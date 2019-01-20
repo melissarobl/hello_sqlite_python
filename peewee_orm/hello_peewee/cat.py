@@ -80,25 +80,25 @@ for cat in age_5:
     print(cat)
 
 
-# Find one or none, useful when only one result is expected
-holly_again = Cat.get_or_none(Cat.name == 'Holly')
-print('\nCat called Holly:', holly_again)
-
-
 # And finding by id (primary key)
 buzz_id = buzz.id
 buzz = Cat.get_by_id(buzz_id)
 print(f'\nGet by ID {buzz_id} returns:', buzz)
 
 
+# Find one or none, useful when only one result is expected
+holly_again = Cat.get_or_none(Cat.name == 'Holly')
+print('\nCat called Holly:', holly_again)
+
+
+# Find one or none, no results
+molly = Cat.get_or_none(Cat.name == 'Molly')
+print('\nCat called Molly:', molly)  # None
+
+
 # How many cats?
 count = Cat.select().count()
 print('\nThere are this many cats in the table:', count)
-
-
-# Find one or none, useful when only one result is expected
-molly = Cat.get_or_none(Cat.name == 'Molly')
-print('\nCat called Molly:', molly)  # None
 
 
 # Delete Mog - delete rows that match a query
