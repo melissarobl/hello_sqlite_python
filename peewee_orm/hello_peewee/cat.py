@@ -101,6 +101,13 @@ count = Cat.select().count()
 print('\nThere are this many cats in the table:', count)
 
 
+# Aggregate query, figuring out average age
+print('\nAverage age of all cats:')
+avg_age = Cat.select(fn.avg(Cat.age).alias('avg_age'))
+for avg in avg_age:
+    print('Average age', avg.avg_age)
+
+
 # Delete Mog - delete rows that match a query
 # If you don't need to know how many rows were changed, omit the rows_changed variable
 print('\nDeleting Mog')
