@@ -1,13 +1,14 @@
 from unittest import TestCase
-from model import Book, NO_ID
+
+
+import database_config
+database_config.database_path = 'test_books.sqlite'
+
+
+from model import Book
 
 
 class TestBook(TestCase):
-
-    def test_create_default_id(self):
-        bk = Book('Title', 'Author')
-        self.assertEqual(NO_ID, bk.id)
-
 
     def test_create_book_default_unread(self):
         bk = Book('Title', 'Author')
@@ -15,9 +16,8 @@ class TestBook(TestCase):
 
 
     def test_string(self):
-        bk = Book('AAAA', 'BBBB', True, 4)
-        self.assertIn('4', str(bk))
-        self.assertIn('AAAA', str(bk))
-        self.assertIn('BBBB', str(bk))
-        self.assertIn('You have read', str(bk))
+        bk = Book(title='AAAA', author='BBBB', read=True, id=4)
+        self.assertEqual('ID 4, Title: AAAA, Author: BBBB. You have read this book.', str(bk))
 
+        bk = Book(title='AAAA', author='BBBB', read=False, id=4)
+        self.assertEqual('ID 4, Title: AAAA, Author: BBBB. You have not read this book.', str(bk))

@@ -2,6 +2,10 @@ from unittest import TestCase
 from unittest.mock import patch
 import ui
 from menu import Menu
+
+import database_config
+database_config.database_path = 'test_books.sqlite'
+
 from model import Book
 
 

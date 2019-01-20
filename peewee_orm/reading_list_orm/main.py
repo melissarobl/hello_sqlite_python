@@ -1,10 +1,9 @@
 """ Program to create and manage a list of books that the user wishes to read, and books that the user has read. """
 
 import bookstore as store
+from bookstore import BookError
 from menu import Menu
 import ui
-
-import model
 
 QUIT = 'Q'
 
@@ -29,6 +28,7 @@ def create_menu():
     menu.add_option('4', 'Show Read Books', show_read_books)
     menu.add_option('5', 'Show All Books', show_all_books)
     menu.add_option('6', 'Change Book Read Status', change_read)
+    menu.add_option('7', 'Delete Book', delete_book)
     menu.add_option(QUIT, 'Quit', quit_program)
 
     return menu
@@ -36,8 +36,11 @@ def create_menu():
 
 def add_book():
     new_book = ui.get_book_info()
-    store.add_book(new_book)
-    # TODO show an error message if a book is already in the store, don't add book
+    try:
+        store.add_book(new_book)
+        ui.message('Book added')
+    except BookError as e:
+        ui.message(e)
 
 
 def show_read_books():
@@ -62,11 +65,22 @@ def search_book():
 
 
 def change_read():
-
     book_id = ui.get_book_id()
     new_read = ui.get_read_value()
-    store.set_book_read(book_id, new_read)
-    # TODO show error message if book's ID is not found.
+    try:
+        store.set_book_read(book_id, new_read)
+        ui.message('Updated.')
+    except BookError as e:
+        ui.message(e)
+
+
+def delete_book():
+    book_id = ui.get_book_id()
+    try:
+        store.delete_book(book_id)
+        print('Book deleted')
+    except BookError as e:
+        ui.message(e)
 
 
 def quit_program():
@@ -74,6 +88,3 @@ def quit_program():
     ui.message('Thanks and bye!')
 
 
-
-if __name__ == '__main__':
-    main()

@@ -1,4 +1,8 @@
 from unittest import TestCase
+
+import database_config
+database_config.database_path = 'test_books.sqlite'
+
 from menu import Menu
 
 

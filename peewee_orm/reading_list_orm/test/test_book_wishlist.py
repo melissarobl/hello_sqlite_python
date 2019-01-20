@@ -1,7 +1,11 @@
 from unittest import TestCase
 from unittest.mock import patch
+
+import database_config
+database_config.database_path = 'test_books.sqlite'
+
 from model import Book
-from bookstore import BookStore
+import bookstore as store
 import main
 
 
@@ -17,20 +21,20 @@ class TestWishList(TestCase):
     """
 
     def setUp(self):
-        self.store = BookStore()
-        self.store.delete_all_books()
+        # self.store = BookStore()
+        store.delete_all_books()
 
 
     def add_test_data(self):
-        self.bk1 = Book('the title', 'the author', False)
-        self.bk2 = Book('what the book is called', 'the writer', True)
-        self.bk3 = Book('fascinating', 'the author', True)
-        self.bk4 = Book('brilliant', 'schrodinger', False)
+        self.bk1 = Book(title='the title', author='the author', read=False)
+        self.bk2 = Book(title='what the book is called', author='the writer', read=True)
+        self.bk3 = Book(title='fascinating', author='the author', read=True)
+        self.bk4 = Book(title='brilliant', author='schrodinger', read=False)
 
-        self.store.add_book(self.bk1)
-        self.store.add_book(self.bk2)
-        self.store.add_book(self.bk3)
-        self.store.add_book(self.bk4)
+        store.add_book(self.bk1)
+        store.add_book(self.bk2)
+        store.add_book(self.bk3)
+        store.add_book(self.bk4)
 
 
     @patch('builtins.input', side_effect=['1', 'Title', 'Author', 'Q'])
@@ -38,20 +42,20 @@ class TestWishList(TestCase):
     def test_add_book(self, mock_print, mock_input):
         main.main()
         # reset counter and make book that mimics the one expected to be created
-        expected_book = Book('Title', 'Author', False, 1)
-        all_books = self.store.get_all_books()
+        expected_book = Book(title='Title', author='Author', read=False, id=1)
+        all_books = store.get_all_books()
         self.assertEqual(expected_book, all_books[0])
 
 
-    @patch('builtins.input', side_effect=['1', 'Title', 'Author', '1', 'title', 'author', 'Q'])
+    @patch('builtins.input', side_effect=['1', 'Title', 'Author', '1', 'Title', 'Author', 'Q'])
     @patch('builtins.print')
     def test_add_book_prevent_duplicates(self, mock_print, mock_input):
         main.main()
+        self.assertEqual(1, store.book_count())
         # make book that mimics the first one expected to be created
-        expected_book = Book('Title', 'Author', False, 1)
-        all_books = self.store.get_all_books()
+        expected_book = Book(title='Title', author='Author', read=False, id=1)
+        all_books = store.get_all_books()
         self.assertEqual(expected_book, all_books[0])
-        self.assertEqual(1, self.store.book_count())
 
 
     @patch('builtins.input', side_effect=['2', 'call', 'Q'])  # match bk2
@@ -115,7 +119,7 @@ class TestWishList(TestCase):
     def test_change_book_read_status(self, mock_print, mock_input):
         self.add_test_data()
         main.main()
-        updated_bk4 = self.store.get_book_by_id(self.bk4.id)
+        updated_bk4 = store.get_book_by_id(self.bk4.id)
         self.assertTrue(updated_bk4.read)
 
 
@@ -124,7 +128,7 @@ class TestWishList(TestCase):
     def test_change_book_read_status_unread(self, mock_print, mock_input):
         self.add_test_data()
         main.main()
-        updated_bk3 = self.store.get_book_by_id(self.bk3.id)
+        updated_bk3 = store.get_book_by_id(self.bk3.id)
         self.assertFalse(updated_bk3.read)
 
 
@@ -141,7 +145,7 @@ class TestWishList(TestCase):
     def test_delete_book_in_list(self, mock_print, mock_input):
         self.add_test_data()
         main.main()
-        self.assertNotIn(self.bk3.id, [book.id for book in self.store.get_all_books()])
+        self.assertNotIn(self.bk3.id, [book.id for book in store.get_all_books()])
 
 
     @patch('builtins.input', side_effect=['7', '42', 'Q'])  # Delete book ID 42, not a book in list
@@ -149,4 +153,4 @@ class TestWishList(TestCase):
     def test_delete_book_not_found_in_list(self, mock_print, mock_input):
         self.add_test_data()
         main.main()
-        self.assertEqual(4, self.store.book_count())
+        self.assertEqual(4, store.book_count())
