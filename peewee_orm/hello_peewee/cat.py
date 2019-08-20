@@ -35,8 +35,8 @@ zoe.save()
 holly = Cat(name="Holly", color='Tabby', age=7)
 holly.save()
 
-mog = Cat(name="Mog", color='Black', age=1)
-mog.save()
+fluffy = Cat(name="Fluffy", color='Black', age=1)
+fluffy.save()
 
 
 # Can also insert many rows at once in a bulk insert,
@@ -92,8 +92,8 @@ print('\nCat called Holly:', holly_again)
 
 
 # Find one or none, no results
-molly = Cat.get_or_none(Cat.name == 'Molly')
-print('\nCat called Molly:', molly)  # None
+oscar = Cat.get_or_none(Cat.name == 'Oscar')
+print('\nCat called Oscar:', oscar)  # None
 
 
 # How many cats?
@@ -108,14 +108,14 @@ for avg in avg_age:
     print('Average age', avg.avg_age)
 
 
-# Delete Mog - delete rows that match a query
+# Delete Fluffy - delete rows that match a query
 # If you don't need to know how many rows were changed, omit the rows_changed variable
-print('\nDeleting Mog')
-rows_deleted = Cat.delete().where(Cat.name == 'Mog').execute()
+print('\nDeleting Fluffy')
+rows_deleted = Cat.delete().where(Cat.name == 'Fluffy').execute()
 print('Rows deleted:', rows_deleted)
 
 
-# Sorting. Notice Mog is deleted
+# Sorting. Notice Fluffy is deleted
 print('\nCats, sorted by name')
 for cat in Cat.select().order_by(Cat.name):
     print(cat)
