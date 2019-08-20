@@ -1,20 +1,25 @@
 import sqlite3
 
 
-# Add some data; using context manager
-# Python 3 docs https://docs.python.org/3.6/library/sqlite3.html
+# Using context manager
 
-with sqlite3.connect('my_first_db.db') as db:
-    cur = db.cursor()
-    cur.execute('insert into phones values ("Android", 5)')
-    cur.execute('insert into phones values ("iPhone", 6)')
+with sqlite3.connect('my_first_db.db') as conn:
+    conn.execute('create table if not exists phones (brand text, version integer)')
 
-# Execute a query. Results are contained in cursor object returned from cur.execute
-for row in cur.execute('select * from phones'):
-    print(row)
 
-with sqlite3.connect('my_first_db.db') as db:
-    cur = db.cursor()
-    cur.execute('drop table phones')  # Delete table
+with sqlite3.connect('my_first_db.db') as conn:
+    conn.execute('insert into phones values ("Android", 5)')
+    conn.execute('insert into phones values ("iPhone", 6)')
+    # No commit statement needed 
 
-db.close()
+    # Execute a query. Results are contained in cursor object returned from cur.execute
+    for row in conn.execute('select * from phones'):
+        print(row)
+
+
+with sqlite3.connect('my_first_db.db') as conn:
+    conn.execute('drop table phones')  # Delete table
+
+conn.close()
+
+

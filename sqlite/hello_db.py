@@ -1,25 +1,28 @@
 import sqlite3
 
-db = sqlite3.connect('my_first_db.db')  # Creates or opens database file
-
-cur = db.cursor()  # Need a cursor object to perform operations
+# Creates or opens connection to db file
+conn = sqlite3.connect('first_db.sqlite')
 
 # Create a table
-cur.execute('create table phones (brand text, version integer)')
+conn.execute('create table if not exists phones (brand text, version integer)')
 
 # Add some data
-cur.execute('insert into phones values ("Android", 5)')
-cur.execute('insert into phones values ("iPhone", 6)')
+conn.execute('insert into phones values ("Android", 5)')
+conn.execute('insert into phones values ("iPhone", 6)')
 
-db.commit()  # Save changes. Don't forget this!
+conn.commit()  # Finalize updates 
 
-# Execute a query. Results can be obtained by
-# treating the cursor as an iterator
-for row in cur.execute('select * from phones'):
+# Execute a query. execute() returns a cursor
+# Can use the cursor in a loop to read each row in turn
+for row in conn.execute('select * from phones'):
     print(row)
 
-cur.execute('drop table phones')  # Delete table
+conn.execute('drop table phones')  # Delete table
 
-db.commit()  # Ask the database to save changes
+conn.commit()  # Ask the database to save changes - don't forget!
 
-db.close()  # And close connection.
+conn.close()  # And close connection.
+
+
+
+

@@ -1,15 +1,21 @@
 import sqlite3
 
-db = sqlite3.connect('my_first_db.db')  # Creates or opens database file
-db.row_factory = sqlite3.Row  # Upgrade row_factory
-cur = db.cursor()
+conn = sqlite3.connect('first_db.sqlite')  # Creates or opens database file
+conn.row_factory = sqlite3.Row  # Upgrade row_factory
 
-## Add data here...
+# Create a table
+conn.execute('create table if not exists phones (brand text, version integer)')
 
-for row in cur.execute('select * from phones'):
+# Add some data
+conn.execute('insert into phones values ("Android", 5)')
+conn.execute('insert into phones values ("iPhone", 6)')
+
+conn.commit()  # Finalize updates 
+
+for row in conn.execute('select * from phones'):
     print(row['brand'])
     print(row['version'])
 
+conn.close()  # And close
 
-db.commit()  # Ask the database to save changes if needed
-db.close()  # And close
+

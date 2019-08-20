@@ -1,11 +1,9 @@
 import sqlite3
 
-db = sqlite3.connect('my_first_db.db')  # Creates or opens database file
-
-cur = db.cursor()  # Need a cursor object to perform operations
+conn = sqlite3.connect('my_first_db.db')  # Creates or opens database file
 
 # Create a table if not exists...
-cur.execute('create table if not exists phones (brand text, version integer)')
+conn.execute('create table if not exists phones (brand text, version integer)')
 
 # Ask user for information for a new phone
 brand = input('Enter brand of phone: ')
@@ -13,18 +11,17 @@ version = int(input('Enter version of phone (as an integer): '))
 
 # No parameters. A format string will just build a string from
 # the brand and version variables, and is still vulnerable to SQL injections
-cur.execute('insert into phones values ("%s", %d)' % (brand, version))
+conn.execute('insert into phones values ("%s", %d)' % (brand, version))
 # Format strings are just as bad!
-# cur.execute(f'insert into phones values ("{brand}", {version})')
+# cur.execute(f'insert into phones values ("{brand}", {version})')  # Don't do this either!
+
+conn.commit()  # Ask the database to save changes
 
 # Fetch and display all data. Results stored in the cursor object
-cur.execute('select * from phones')
+cur = conn.execute('select * from phones')
 
 for row in cur:
     print(row)
 
-db.commit()  # Ask the database to save changes
+conn.close()
 
-db.close()
-
-# TODO error handling!
