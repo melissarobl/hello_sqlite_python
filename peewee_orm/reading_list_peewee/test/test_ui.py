@@ -1,16 +1,18 @@
 from unittest import TestCase
 from unittest.mock import patch
+
+import database_config
+database_config.database_path = 'database/test_books.db'
+
+import bookstore 
+from model import Book
+
 import ui
 from menu import Menu
 
-import database_config
-database_config.database_path = 'test_books.sqlite'
-
-from model import Book
-
 
 class TestUI(TestCase):
-
+ 
     @patch('builtins.input', side_effect=['a'])
     @patch('builtins.print')
     def test_display_menu_get_choice(self, mock_print, mock_input):
@@ -42,6 +44,7 @@ class TestUI(TestCase):
         bk2 = Book('b', 'bbb')
         books = [bk1, bk2]
         ui.show_books(books)
+
         mock_print.assert_any_call(bk1)
         mock_print.assert_any_call(bk2)
 

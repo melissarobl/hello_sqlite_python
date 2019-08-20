@@ -38,7 +38,6 @@ def get_book_info():
      :returns: a Book created from the title and author. """
     title = input('Enter book title: ')
     author = input('Enter book author: ')
-
     return Book(title=title, author=author)
 
 

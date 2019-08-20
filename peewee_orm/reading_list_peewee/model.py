@@ -1,15 +1,11 @@
 from peewee import *
 from database_config import database_path
 
-
 db = SqliteDatabase(database_path)
-
 
 class Book(Model):
 
     """ Represents a book in the database """
-
-    # TODO add the constraint that title + author should be unique
 
     title = CharField()
     author = CharField()
@@ -18,9 +14,8 @@ class Book(Model):
 
     class Meta:
         database = db
-        indexes = (
-            (('title', 'author'), True),
-        )
+        constraints = [SQL('UNIQUE( title COLLATE NOCASE, author COLLATE NOCASE )')]
+
 
     def __str__(self):
         read_status = 'have' if self.read else 'have not'

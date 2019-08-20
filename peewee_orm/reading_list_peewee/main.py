@@ -1,11 +1,10 @@
 """ Program to create and manage a list of books that the user wishes to read, and books that the user has read. """
+import peewee 
 
-import bookstore as store
-from bookstore import BookError
+import bookstore
+from bookstore import Book
 from menu import Menu
 import ui
-
-QUIT = 'Q'
 
 
 def main():
@@ -16,7 +15,7 @@ def main():
         choice = ui.display_menu_get_choice(menu)
         action = menu.get_action(choice)
         action()
-        if choice == QUIT:
+        if choice == 'Q':
             break
 
 
@@ -28,8 +27,7 @@ def create_menu():
     menu.add_option('4', 'Show Read Books', show_read_books)
     menu.add_option('5', 'Show All Books', show_all_books)
     menu.add_option('6', 'Change Book Read Status', change_read)
-    menu.add_option('7', 'Delete Book', delete_book)
-    menu.add_option(QUIT, 'Quit', quit_program)
+    menu.add_option('Q', 'Quit', quit_program)
 
     return menu
 
@@ -37,54 +35,46 @@ def create_menu():
 def add_book():
     new_book = ui.get_book_info()
     try:
-        store.add_book(new_book)
-        ui.message('Book added')
-    except BookError as e:
-        ui.message(e)
+        new_book.save()
+    except peewee.IntegrityError:
+        ui.message('Error, book already exists in the database')    
 
 
 def show_read_books():
-    read_books = store.get_books_by_read_value(True)
+    read_books = bookstore.get_books_by_read_value(True)
     ui.show_books(read_books)
 
 
 def show_unread_books():
-    unread_books = store.get_books_by_read_value(False)
+    unread_books = bookstore.get_books_by_read_value(False)
     ui.show_books(unread_books)
 
 
 def show_all_books():
-    books = store.get_all_books()
+    books = bookstore.get_all_books()
     ui.show_books(books)
 
 
 def search_book():
     search_term = ui.ask_question('Enter search term, will match partial authors or titles.')
-    matches = store.book_search(search_term)
+    matches = bookstore.book_search(search_term)
     ui.show_books(matches)
 
 
 def change_read():
     book_id = ui.get_book_id()
-    new_read = ui.get_read_value()
-    try:
-        store.set_book_read(book_id, new_read)
-        ui.message('Updated.')
-    except BookError as e:
-        ui.message(e)
-
-
-def delete_book():
-    book_id = ui.get_book_id()
-    try:
-        store.delete_book(book_id)
-        print('Book deleted')
-    except BookError as e:
-        ui.message(e)
-
+    book = bookstore.get_book_by_id(book_id)  
+    if not book:
+        ui.message('Book not found')
+        return
+    new_read = ui.get_read_value()     
+    book.read = new_read 
+    book.save()
+    
 
 def quit_program():
-    # store.close()
     ui.message('Thanks and bye!')
 
 
+if __name__ == '__main__':
+    main()
