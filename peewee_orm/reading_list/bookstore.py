@@ -1,6 +1,5 @@
-import sqlite3
 from model import Book
-
+from peewee import fn
         
 def delete_book(book):
     """ Removes book from store. Raises BookError if book not in store. 
@@ -21,12 +20,10 @@ def get_book_by_id(book_id):
     :param id the ID to search for
     :returns the book, if found, or None if book not found.
     """
-    
     return Book.get_or_none(Book.id == book_id)
 
 
 def exact_match(book):
-
     search = Book.get_or_none( (Book.title == book.title) & (Book.author == book.author) )
     return search is not None  
 
@@ -38,8 +35,7 @@ def book_search(term):
     :returns a list of books with author or title that match the search term. The list will be empty if there are no matches.
     """
 
-    # TODO CASE INSENSITIVE 
-    query = Book.select().where((Book.title.contains(term)) | (Book.author.contains(term)))
+    query = Book.select().where( ( fn.LOWER(Book.title).contains(term.lower() ) ) | (fn.LOWER(Book.author).contains(term.lower())))
     return list(query)
 
 

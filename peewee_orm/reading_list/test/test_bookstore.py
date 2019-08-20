@@ -176,7 +176,7 @@ class TestBookstore(TestCase):
 
     def test_is_book_in_store_empty_list(self):
         self.clear_bookstore()
-        not_in_store = Book(title='aaaa', author='bbbb')
+        not_in_store = Book(title='ccc', author='ddd')
         self.assertFalse(bookstore.exact_match(not_in_store))
 
 
@@ -197,14 +197,14 @@ class TestBookstore(TestCase):
 
     def test_search_book_empty_store(self):
         self.clear_bookstore()
-        self.assertEqual([], bookstore.book_search('Not in list'))
+        self.assertEqual([], bookstore.book_search('No book here'))
 
 
     def test_search_book_case_insensitive_title_match(self):
         self.add_test_data()
         self.assertCountEqual([self.bk1, self.bk2], bookstore.book_search('bOoK'))
 
-
+ 
     def test_search_book_case_insensitive_author_match(self):
         self.add_test_data()
         self.assertCountEqual([self.bk3], bookstore.book_search('cReAtOr'))
