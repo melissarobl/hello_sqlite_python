@@ -68,7 +68,7 @@ print('\nChanged ginger cats to orange which modified this many rows:', rows_cha
 
 # Insert another cat, same as before
 print('\nAdd new cat')
-buzz = Cat(name='Buzz', color='Gray', age='5')
+buzz = Cat(name='Buzz', color='Gray', age=5)
 buzz.save()
 print(buzz)
 
