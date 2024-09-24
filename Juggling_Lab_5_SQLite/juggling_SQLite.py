@@ -1,4 +1,6 @@
 """
+This program creates an SQLite database to hold information on the chainsaw juggling record holders. New jugglers can
+be added, old jugglers can be deleted and number of catches can be edited. Record holders can be deleted completely as well.
 A menu - you need to add the database and fill in the functions.
 """
 import sqlite3
@@ -6,9 +8,8 @@ import sqlite3
 db = 'chainsaw_juggling.sqlite'
 
 
-# TODO create database table OR set up Peewee model to create table
-
 def main():
+    # create database table OR set up Peewee model to create table
     create_table_of_chainsaw_juggling_data()
     add_data_to_chainsaw_juggling_db()
 
@@ -127,7 +128,6 @@ def edit_existing_record(): # You should be able to update the number of catches
     conn.close()
 
 
-
 def delete_record(): # you should be able to delete a record, by record holder's name. What if user wants to delete record that does not exist?'
     juggler_to_delete = (input('Enter the name of the juggler to delete: '))
     juggler_search_sql = 'SELECT * FROM chainsaw_juggling WHERE UPPER(name) = ?'
@@ -144,7 +144,6 @@ def delete_record(): # you should be able to delete a record, by record holder's
         else:
             print(f'There is no record of juggler {juggler_to_delete} to delete.')
     conn.close()
-
 
 
 if __name__ == '__main__':
