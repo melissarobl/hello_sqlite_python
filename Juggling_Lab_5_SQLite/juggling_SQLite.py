@@ -44,7 +44,7 @@ def main():
 def create_table_of_chainsaw_juggling_data():
     try:
         with sqlite3.connect(db) as conn:
-            conn.execute('CREATE TABLE IF NOT EXISTS chainsaw_juggling (Name TEXT, Country TEXT, Number_of_Catches INT)')
+            conn.execute('CREATE TABLE IF NOT EXISTS chainsaw_juggling (Name TEXT, Country TEXT, Number_of_Catches INT), UNIQUE (Name, Country)')
     except sqlite3.Error as e:
         print(f'Error creating table because {e}')
     conn.close()
@@ -84,9 +84,10 @@ def search_by_name():  # ask user for a name, and print the matching record if f
     conn.close()
 
 
-def add_new_record():
+def add_new_record():  # unique
     new_name = input('Enter the name of the new chainsaw juggler: ')
     new_country = input('Enter the name of their country: ')
+
     check_db_for_juggler_sql = 'SELECT * FROM chainsaw_juggling WHERE UPPER(name) = UPPER(?) AND UPPER(country) = UPPER(?)'
     add_new_juggler_sql = 'INSERT INTO chainsaw_juggling VALUES (?, ?, ?)'
 
@@ -98,17 +99,18 @@ def add_new_record():
             print('Please enter an integer for the number of catches.')
             continue
     try:
-        with sqlite3.connect(db) as conn:
-            existing_juggler_record = conn.execute(check_db_for_juggler_sql, (new_name, new_country, )).fetchone()
+        with sqlite3.connect(db) as conn:  # in class talked about using 'unique' in SQL code to prevent duplicates, but I couldn't get that to work
+            conn.execute(add_new_juggler_sql, (new_name, new_country, new_number_of_catches))
+
+            existing_juggler_record = conn.execute(check_db_for_juggler_sql, (new_name, new_country, )).fetchone() # What if user wants to add a record that already exists?
             if existing_juggler_record:
                 print('This juggler already exists in the database.')
             else:
                 conn.execute(add_new_juggler_sql, (new_name, new_country, new_number_of_catches))
-                conn.commit()
                 print('Added new chainsaw juggler.')
+                conn.commit()
     except Exception as e:
         print(f'Error adding new record: {e}')
-    finally:
         conn.close()
 
 
